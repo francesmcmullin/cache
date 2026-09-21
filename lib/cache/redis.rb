@@ -3,7 +3,11 @@ module Cache::Redis
     redis_version = Gem::Version.new(Redis::VERSION)
     
     if redis_version >= Gem::Version.new("4")
-      @metal._client.reconnect
+      if @metal._client.respond_to?(:reconnect)
+        @metal._client.reconnect
+      else
+        @metal._client.close
+      end
     else
       @metal.client.reconnect
     end
